@@ -9,97 +9,92 @@
 
 namespace CMU462 {
 
-class HardwareRenderer : public SVGRenderer {
- public:
+	class HardwareRenderer : public SVGRenderer {
+	public:
+		HardwareRenderer() { glClearColor(1, 1, 1, 1); }
 
-  HardwareRenderer() { glClearColor(1,1,1,1); }
+		// Implements Renderer
+		~HardwareRenderer() {}
 
-  // Implements Renderer
-  ~HardwareRenderer() { }
+		// 2D drawing mode
+		void begin2DDrawing();
+		void leave2DDrawing();
 
-  // 2D drawing mode
-  void begin2DDrawing();
-  void leave2DDrawing();
+		// Draw an svg input to render target
+		void draw_svg(SVG& svg);
 
-  // Draw an svg input to render target
-  void draw_svg( SVG& svg );
+		// GL context resize callback
+		void resize(size_t w, size_t h);
 
-  // GL context resize callback 
-  void resize(size_t w, size_t h);
+		// Clear render target
+		inline void clear_target() {
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		}
 
-  // Clear render target
-  inline void clear_target() {
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-  }
+		// Set svg to screen transformation
+		inline void set_svg_2_screen(Matrix3x3 svg_2_screen) {
+			this->svg_2_screen = svg_2_screen;
+		}
 
-  // Set svg to screen transformation
-  inline void set_svg_2_screen( Matrix3x3 svg_2_screen ) {
-    this->svg_2_screen = svg_2_screen;
-  }
+	private:
+		// Primitive Drawing //
 
- private:
+		// Draws an SVG element
+		void draw_element(SVGElement* element);
 
-  // Primitive Drawing //
+		// Draws a point
+		void draw_point(Point& p);
 
-  // Draws an SVG element
-  void draw_element( SVGElement* element );
+		// Draw a line
+		void draw_line(Line& line);
 
-  // Draws a point
-  void draw_point( Point& p );
+		// Draw a polyline
+		void draw_polyline(Polyline& polyline);
 
-  // Draw a line
-  void draw_line( Line& line );
+		// Draw a rectangle
+		void draw_rect(Rect& rect);
 
-  // Draw a polyline
-  void draw_polyline( Polyline& polyline );
+		// Draw a polygon
+		void draw_polygon(Polygon& polygon);
 
-  // Draw a rectangle
-  void draw_rect ( Rect& rect );
+		// Draw a ellipse
+		void draw_ellipse(Ellipse& ellipse);
 
-  // Draw a polygon
-  void draw_polygon( Polygon& polygon );
+		// Draws a bitmap image
+		void draw_image(Image& image);
 
-  // Draw a ellipse
-  void draw_ellipse( Ellipse& ellipse );
+		// Draw a group
+		void draw_group(Group& group);
 
-  // Draws a bitmap image
-  void draw_image( Image& image );
+		// Rasterization //
 
-  // Draw a group
-  void draw_group( Group& group );
+		// rasterize a point
+		void rasterize_point(float x, float y, Color color);
 
-  // Rasterization //
+		// rasterize a line
+		void rasterize_line(float x0, float y0, float x1, float y1,
+							Color color);
 
-  // rasterize a point
-  void rasterize_point( float x, float y, Color color );
+		// rasterize a triangle
+		void rasterize_triangle(float x0, float y0, float x1, float y1,
+								float x2, float y2, Color color);
 
-  // rasterize a line
-  void rasterize_line( float x0, float y0,
-                       float x1, float y1,
-                       Color color);
+		// rasterize an image
+		void rasterize_image(float x0, float y0, float x1, float y1,
+							 Texture& tex);
 
-  // rasterize a triangle
-  void rasterize_triangle( float x0, float y0,
-                           float x1, float y1,
-                           float x2, float y2,
-                           Color color );
+		// resolve samples to render target
+		// void resolve( void );
 
-  // rasterize an image
-  void rasterize_image( float x0, float y0,
-                        float x1, float y1,
-                        Texture& tex );
+		// GL context dimension
+		size_t context_w;
+		size_t context_h;
 
-  // resolve samples to render target
-  // void resolve( void );
+		// SVG coordinates to screen space coordinates
+		Matrix3x3 svg_2_screen;
 
-  // GL context dimension
-  size_t context_w; size_t context_h;
+	};  // class HardwareRenderer
 
-  // SVG coordinates to screen space coordinates
-  Matrix3x3 svg_2_screen;
-    
-}; // class HardwareRenderer
+}  // namespace CMU462
 
-} // namespace CMU462
-
-#endif // CMU462_HARDWARE_RENDERER_H
+#endif  // CMU462_HARDWARE_RENDERER_H
